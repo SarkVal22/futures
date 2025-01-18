@@ -71,8 +71,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Бот запущен и отслеживает листинги новых фьючерсов на MEXC!")
     known_pairs = set(await fetch_futures_pairs())  # Сохраняем текущий список пар
 
-async def run_bot():
-    """Запуск бота."""
+def main():
+    """Основной метод для запуска бота."""
     global application
     application = Application.builder().token(TELEGRAM_TOKEN).build()
 
@@ -80,11 +80,12 @@ async def run_bot():
     application.add_handler(CommandHandler("start", start))
 
     # Запускаем периодическую проверку
-    asyncio.create_task(periodic_check())
+    loop = asyncio.get_event_loop()
+    loop.create_task(periodic_check())
 
     logger.info("Bot is running...")
-    await application.run_polling()  # Используем long polling
+    application.run_polling()  # Используем long polling
 
 # Запуск бота
 if __name__ == "__main__":
-    asyncio.run(run_bot())
+    main()
